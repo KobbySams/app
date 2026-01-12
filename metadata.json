@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Flash Attend - Class Attendance System",
+  "description": "A comprehensive classroom attendance tracking system with QR scanning for students and AI-powered insights for lecturers.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
