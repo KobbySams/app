@@ -1,7 +1,7 @@
 
 import React, { useRef, useState } from 'react';
-import { Camera, RefreshCw, Check, AlertCircle } from 'lucide-react';
-import { extractStudentIdDetails } from '../services/geminiService';
+import { Camera, RefreshCw } from 'lucide-react';
+import { processIdCredentials } from '../services/geminiService';
 
 interface IDScannerProps {
   onExtracted: (details: { name: string; studentId: string }) => void;
@@ -12,7 +12,7 @@ const IDScanner: React.FC<IDScannerProps> = ({ onExtracted, onCancel }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isExtracting, setIsExtracting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   const startCamera = async () => {
@@ -50,16 +50,16 @@ const IDScanner: React.FC<IDScannerProps> = ({ onExtracted, onCancel }) => {
     const base64 = canvas.toDataURL('image/jpeg').split(',')[1];
     setCapturedImage(canvas.toDataURL('image/jpeg'));
     
-    setIsExtracting(true);
+    setIsProcessing(true);
     stopCamera();
     
-    const details = await extractStudentIdDetails(base64);
-    setIsExtracting(false);
+    const details = await processIdCredentials(base64);
+    setIsProcessing(false);
     
     if (details && (details.name || details.studentId)) {
       onExtracted(details);
     } else {
-      alert("Could not extract details clearly. Please try again with better lighting.");
+      alert("System could not verify the details. Please ensure the card is clear and try again.");
       setCapturedImage(null);
       startCamera();
     }
@@ -71,58 +71,48 @@ const IDScanner: React.FC<IDScannerProps> = ({ onExtracted, onCancel }) => {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[250] bg-black flex flex-col items-center justify-center p-6">
+    <div className="fixed inset-0 z-[250] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl">
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-          <h3 className="font-bold text-gray-900">Scan ID Card</h3>
-          <button onClick={onCancel} className="text-gray-400 hover:text-gray-600">Cancel</button>
+          <h3 className="font-bold text-gray-900">Credential Sync</h3>
+          <button onClick={onCancel} className="text-gray-400 hover:text-gray-600 font-bold">Close</button>
         </div>
         
         <div className="relative aspect-[1.6/1] bg-black overflow-hidden flex items-center justify-center">
           {capturedImage ? (
-            <img src={capturedImage} className="w-full h-full object-cover" />
+            <img src={capturedImage} className="w-full h-full object-cover" alt="Captured" />
           ) : (
-            <video 
-              ref={videoRef} 
-              autoPlay 
-              playsInline 
-              className="w-full h-full object-cover"
-            />
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
           )}
           
-          <div className="absolute inset-0 border-2 border-dashed border-white/50 m-8 rounded-xl pointer-events-none flex flex-col items-center justify-center">
-             {!capturedImage && (
-               <div className="bg-black/20 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-xs font-bold uppercase tracking-widest">
-                 Align ID within frame
+          <div className="absolute inset-0 border-2 border-dashed border-white/50 m-8 rounded-xl pointer-events-none flex items-center justify-center">
+             {!capturedImage && !isProcessing && (
+               <div className="bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-[10px] font-black uppercase tracking-widest">
+                 Position ID Card within Frame
                </div>
              )}
           </div>
 
-          {isExtracting && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 text-center">
+          {isProcessing && (
+            <div className="absolute inset-0 bg-indigo-600/80 backdrop-blur-md flex flex-col items-center justify-center text-white p-8 text-center">
               <RefreshCw className="w-10 h-10 animate-spin mb-4" />
-              <p className="font-bold text-lg">AI Extracting Details...</p>
-              <p className="text-sm opacity-70">Recognizing name and student ID</p>
+              <p className="font-black text-xl tracking-tighter">Processing Credentials...</p>
+              <p className="text-sm opacity-80 font-medium mt-1">Authenticating student profile</p>
             </div>
           )}
         </div>
 
         <div className="p-8 flex justify-center">
-          {!capturedImage && !isExtracting && (
+          {!capturedImage && !isProcessing && (
             <button 
               onClick={captureAndProcess}
-              className="bg-indigo-600 text-white rounded-full p-6 shadow-xl shadow-indigo-200 active:scale-90 transition-transform"
+              className="bg-indigo-600 text-white rounded-full p-6 shadow-xl shadow-indigo-100 active:scale-90 transition-transform"
             >
               <Camera size={32} />
             </button>
           )}
         </div>
       </div>
-      
-      <canvas ref={canvasRef} className="hidden" />
-      <p className="text-white/60 text-sm mt-8 max-w-xs text-center">
-        Place your student ID card on a flat surface with good lighting for best results.
-      </p>
     </div>
   );
 };
