@@ -28,6 +28,8 @@ export interface Course {
   code: string;
   name: string;
   lecturerId: string;
+  qrExpirationMinutes: number;
+  qrRefreshFrequencySeconds: number;
 }
 
 export interface AttendanceRecord {
@@ -44,6 +46,7 @@ export interface AttendanceSession {
   id: string;
   courseId: string;
   startTime: string;
+  expiresAt: string;
   qrToken: string;
 }
 

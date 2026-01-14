@@ -1,6 +1,6 @@
 {
-  "name": "SmartAttend - Advanced Attendance System",
-  "description": "A comprehensive classroom attendance tracking system with high-precision QR scanning and automated participation analytics.",
+  "name": "AttendEase - Modern Attendance Platform",
+  "description": "The simplest way to track class attendance. A modern web portal for students and teachers featuring smart scanning and easy insights.",
   "requestFramePermissions": [
     "camera"
   ]

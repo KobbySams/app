@@ -6,11 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartAttend</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
@@ -23,14 +35,20 @@
             background: #e2e8f0;
             border-radius: 10px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #cbd5e1;
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
         }
         .custom-markdown h1, .custom-markdown h2, .custom-markdown h3 {
             font-weight: 800;
             color: #1e293b;
             margin-top: 1rem;
             margin-bottom: 0.5rem;
+        }
+        .dark .custom-markdown h1, .dark .custom-markdown h2, .dark .custom-markdown h3 {
+            color: #f8fafc;
         }
         .custom-markdown ul {
             list-style-type: disc;
@@ -56,7 +74,7 @@
 }
 </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
     <div id="root"></div>
 </body>
 </html>
